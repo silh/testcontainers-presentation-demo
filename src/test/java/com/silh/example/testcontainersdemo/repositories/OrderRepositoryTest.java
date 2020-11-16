@@ -24,4 +24,12 @@ class OrderRepositoryTest {
 
     assertThat(all).isNotEmpty();
   }
+
+  @Test
+  void canFetchByUserIdAndProductId() {
+    final List<OrderEntity> found = orderRepository.findByUserIdAndProductsContaining(1L, 1L);
+
+    assertThat(found ).isNotEmpty();
+    found.forEach(System.out::println);
+  }
 }

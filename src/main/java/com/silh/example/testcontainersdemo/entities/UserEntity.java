@@ -23,6 +23,9 @@ public class UserEntity {
   @EqualsAndHashCode.Include
   @ToString.Include
   private Long id;
+  @EqualsAndHashCode.Include
+  @ToString.Include
+  private String name;
   @OneToMany(mappedBy = "user")
   private List<OrderEntity> orders;
 }

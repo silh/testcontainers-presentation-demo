@@ -20,11 +20,10 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(onlyExplicitlyIncluded = true)
+@ToString
 public class OrderEntity {
 
   @Id
-  @ToString.Include
   private Long id;
 
   @JoinTable(
@@ -37,9 +36,5 @@ public class OrderEntity {
 
   @JoinColumn(name = "user_id")
   @ManyToOne(fetch = FetchType.EAGER)
-  @ToString.Include
   private UserEntity user;
-
-
-  private OrderMetadata metadata;
 }
