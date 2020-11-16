@@ -15,6 +15,7 @@ create table if not exists orders
 (
     id     bigint primary key,
     user_id bigint not null,
+--     metadata jsonb,
     foreign key (user_id) references users
 );
 
