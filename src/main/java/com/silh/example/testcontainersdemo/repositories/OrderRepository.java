@@ -12,8 +12,10 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
     nativeQuery = true,
     value =
       "select * " +
-        "from orders as o, products as p, users u " +
-        "join order_to_products op on op.order_id = o.id and op.product_id = p.id " +
+        "from orders o " +
+        "join order_to_products op on op.order_id = o.id " +
+        "join products p on op.product_id = p.id " +
+        "join users u on u.id = o.user_id " +
         "where u.id = :userId and p.id = :productId"
   )
   List<OrderEntity> findByUserIdAndProductsContaining(@Param("userId") Long userId,

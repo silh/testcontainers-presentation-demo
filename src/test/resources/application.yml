@@ -1,1 +1,7 @@
-spring.jpa.hibernate.ddl-auto: none
+spring:
+  jpa.hibernate.ddl-auto: none
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:postgresql:13.1:///test?TC_DAEMON=true
+  jpa:
+    generate-ddl: true
