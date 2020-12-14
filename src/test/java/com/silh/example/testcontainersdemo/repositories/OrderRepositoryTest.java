@@ -75,9 +75,6 @@ class OrderRepositoryTest {
         CompletableFuture.runAsync(postgres::start),
         CompletableFuture.runAsync(toxiProxy::start)
       ).get();
-      postgres.start();
-      toxiProxy.start();
-      toxiProxy.getProxy(postgres, postgres.getMappedPort(5432));
     }
 
     @PreDestroy
@@ -93,7 +90,7 @@ class OrderRepositoryTest {
     @Bean
     public HikariDataSource dataSource(ToxiproxyContainer.ContainerProxy postgresProxy) {
       final String url = String.format(
-        "jdbc:postgresql://%s:%s/test",
+        "jdbc:postgresql://%s:%s/test?socketTimeout=1",
         postgresProxy.getContainerIpAddress(),
         postgresProxy.getProxyPort()
       );
