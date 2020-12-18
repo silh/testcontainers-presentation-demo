@@ -13,6 +13,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.TransactionSystemException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.ToxiproxyContainer;
@@ -25,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.testcontainers.containers.PostgreSQLContainer.POSTGRESQL_PORT;
 
 @ExtendWith(SpringExtension.class)
@@ -41,12 +45,12 @@ class OrderRepositoryTest {
   private ToxiproxyContainer.ContainerProxy postgresProxy;
 
   @Test
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
   void canFetchAllOrdersForUser() throws IOException {
     postgresProxy.toxics()
                  .latency("slowPostgres", ToxicDirection.DOWNSTREAM, 10_000);
-    final List<OrderEntity> all = orderRepository.findAll();
-
-    assertThat(all).isNotEmpty();
+    assertThatExceptionOfType(TransactionSystemException.class)
+      .isThrownBy(() -> orderRepository.findAll());
   }
 
   @Test
@@ -65,9 +69,8 @@ class OrderRepositoryTest {
     private final ToxiproxyContainer toxiProxy =
       new ToxiproxyContainer(DockerImageName.parse("shopify/toxiproxy:2.1.0"))
         .withNetwork(network);
-    private final PostgreSQLContainer postgres =
-      (PostgreSQLContainer) new PostgreSQLContainer(DockerImageName.parse("postgres:13.1"))
-        .withNetwork(network);
+    private final PostgreSQLContainer postgres = new PostgreSQLContainer<>(DockerImageName.parse("postgres:13.1"))
+      .withNetwork(network);
 
     public TestConfig() throws ExecutionException, InterruptedException {
       postgres.withDatabaseName("test");
